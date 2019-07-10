@@ -81,7 +81,7 @@ const Config = {
   features: {
     withdrawels: false,
     deposits: false,
-    currency: 'BTF',
+    currency: 'PPY',
     americanOdds: false
   },
   pingInterval: 9000 // Interval in seconds to ping the BlockChain.

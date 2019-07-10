@@ -253,10 +253,14 @@ class TopMenu extends PureComponent {
     const parentIconCurrencyClass = () => {
       let configCurr = Config.features.currency;
 
-      if (configCurr === 'BTC') {
-        return 'icon-main bitcoin-icon-main';
-      } else if (configCurr === 'BTF') {
-        return 'icon-main bitfun-icon-main';
+      switch (configCurr) {
+        case 'BTC':
+          return 'icon-main bitcoin-icon-main';
+        case 'PPY':
+          return 'icon-main peerplays-icon-main';
+        case 'BTF':
+        default:
+          return 'icon-main bitfun-icon-main';
       }
     };
 
@@ -314,6 +318,10 @@ class TopMenu extends PureComponent {
                           this.props.currencyFormat
                         ) }
                       />
+                      { 
+                        Config.features.currency === 'PPY' && 
+                        <p className='peerplays-asset-name'>{this.props.currencyFormat}&nbsp;</p>
+                      }
                       {this.props.availableBalance}
                     </div>
                   </a>

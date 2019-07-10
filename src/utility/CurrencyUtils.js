@@ -182,6 +182,10 @@ var CurrencyUtils = {
         }
 
         return <img src={ btf.mBlack } className='currency-symbol mbtf' alt='mBTF' />;
+      case 'PPY':
+        return <span className='currency-symbol-ppy'>PPY</span>;
+      case 'mPPY':
+        return <span className='currency-symbol-ppy'>mPPY</span>;
       default:
         break;
     }
