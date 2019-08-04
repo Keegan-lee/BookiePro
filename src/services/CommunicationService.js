@@ -823,6 +823,8 @@ class CommunicationService {
    * Get betting market group given event ids
    */
   static getBettingMarketGroupsByEventIds(eventIds) {
+    console.log('----- getBettingMarketGroupsByEventIds');
+
     if (eventIds instanceof Immutable.List) {
       eventIds = eventIds.toJS();
     }
@@ -835,13 +837,19 @@ class CommunicationService {
           'description'
         ]);
 
+        // A polished Market Group is one where all necessary modifications have been made
+        // modifications
+        //  - localize
+        //  - strip asset from description 
+        const polishedMarketGroups = ObjectUtils.stripAssetNameFromBMGs(localizedMarketGroups);
+
         // If there are no Betting Market Groups, returned an empty object
         if (ids.length <= 0) {
-          return localizedMarketGroups;
+          return polishedMarketGroups;
         }
 
         // Subscribe to changes on the blockchain.
-        return this.getBettingMarketGroupsByIds(ids).then(() => localizedMarketGroups);
+        return this.getBettingMarketGroupsByIds(ids).then(() => polishedMarketGroups);
       }
     )
     );

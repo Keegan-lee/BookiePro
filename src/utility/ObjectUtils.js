@@ -332,6 +332,13 @@ const betBelongsToBMG = function(state, theBetInQuestion, currentBMG) {
   return betBelongs;
 };
 
+const stripAssetNameFromBMGs = function(bmgs) {
+  bmgs.forEach((bmg, index) => {
+    bmgs = bmgs.set(index, bmg.set('description', bmg.get('description').split('_')[0]));
+  });
+  return bmgs;
+};
+
 const ObjectUtils = {
   getStakeFromBetObject,
   getProfitLiabilityFromBetObject,
@@ -345,7 +352,8 @@ const ObjectUtils = {
   bettingMarketGroupStatus,
   isStatusUpdate,
   isMyBet,
-  betBelongsToBMG
+  betBelongsToBMG,
+  stripAssetNameFromBMGs
 };
 
 export default ObjectUtils;
