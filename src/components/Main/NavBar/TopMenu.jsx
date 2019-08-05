@@ -257,6 +257,7 @@ class TopMenu extends PureComponent {
         case 'BTC':
           return 'icon-main bitcoin-icon-main';
         case 'PPY':
+        case 'TEST':
           return 'icon-main peerplays-icon-main';
         case 'BTF':
         default:
@@ -319,7 +320,8 @@ class TopMenu extends PureComponent {
                         ) }
                       />
                       { 
-                        Config.features.currency === 'PPY' && 
+                        ( Config.features.currency === 'PPY' || 
+                          Config.features.currency === 'TEST') && 
                         <p className='peerplays-asset-name'>{this.props.currencyFormat}&nbsp;</p>
                       }
                       {this.props.availableBalance}

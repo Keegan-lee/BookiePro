@@ -186,6 +186,10 @@ var CurrencyUtils = {
         return <span className='currency-symbol-ppy'>PPY</span>;
       case 'mPPY':
         return <span className='currency-symbol-ppy'>mPPY</span>;
+      case 'TEST':
+        return <span className='currency-symbol-ppy'>TEST</span>;
+      case 'mTEST':
+        return <span className='currency-symbol-ppy'>mTEST</span>;
       default:
         break;
     }
