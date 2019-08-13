@@ -181,6 +181,10 @@ const mapStateToProps = (state, ownProps) => {
   var autoOddsPopulated = 0;
   var profit, odds, stake;
   let page = Immutable.Map();
+
+  let betAssetPrecision =
+    state.getIn(['asset', 'assetsById', Config.coreAsset, 'precision']) || 0;
+
   originalBets.forEach((bet) => {
     const eventId = bet.get('event_id');
     const betType = bet.get('bet_type');
@@ -248,7 +252,7 @@ const mapStateToProps = (state, ownProps) => {
   // Number of Good bets
   const numberOfGoodBets = originalBets.reduce((sum, bet) => {
     return sum +
-      (BettingModuleUtils.isValidBet(bet, availableBalance, currencyType) | 0);
+      (BettingModuleUtils.isValidBet(bet, availableBalance, currencyType, betAssetPrecision) | 0);
   }, 0);
   // Overlay
   const overlay = state.getIn(['quickBetDrawer', 'overlay']);
@@ -264,9 +268,9 @@ const mapStateToProps = (state, ownProps) => {
   // mili[coin] = balance / 100,000
   // [coin] = balance / 100,000,000
   if (currencyType === 'mCoin') {
-    availableBalance = availableBalance / Math.pow(10, 5);
+    availableBalance = availableBalance / Math.pow(10, betAssetPrecision - 3);
   } else {
-    availableBalance = availableBalance / Math.pow(10, 8);
+    availableBalance = availableBalance / Math.pow(10, betAssetPrecision);
   }
 
   const sufficientFunds = parseFloat(totalBetAmountString) <= availableBalance;

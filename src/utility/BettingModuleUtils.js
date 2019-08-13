@@ -345,8 +345,8 @@ var BettingModuleUtils = {
    * @param { Immutable.Maps} - bet
    * @returns {boolean} - if the bet valid
    */
-  isValidBet: function(bet, balance, currencyType) {
-    
+  isValidBet: function(bet, balance, currencyType, betAssetPrecision = 8) {
+
     let proposedBetAmount = 0;
     let bet_type = bet.get('bet_type');
     let stake =  parseFloat(bet.get('stake'));
@@ -358,9 +358,9 @@ var BettingModuleUtils = {
     // mili[coin] = balance / 100,000
     // [coin] = balance / 100,000,000
     if (currencyType === 'mCoin') {
-      balance = balance / Math.pow(10, 5);
+      balance = balance / Math.pow(10, betAssetPrecision - 3);
     } else {
-      balance = balance / Math.pow(10, 8);
+      balance = balance / Math.pow(10, betAssetPrecision);
     }
 
     let transactionFee = currencyType === 'coin'

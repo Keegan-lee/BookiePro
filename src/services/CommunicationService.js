@@ -823,8 +823,6 @@ class CommunicationService {
    * Get betting market group given event ids
    */
   static getBettingMarketGroupsByEventIds(eventIds) {
-    console.log('----- getBettingMarketGroupsByEventIds');
-
     if (eventIds instanceof Immutable.List) {
       eventIds = eventIds.toJS();
     }
