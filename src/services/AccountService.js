@@ -1,6 +1,7 @@
 import {Config} from '../constants';
 import log from 'loglevel';
 import CommunicationService from './CommunicationService';
+import KeyGeneratorService from './KeyGeneratorService';
 import WalletService from './WalletService';
 import {I18n} from 'react-redux-i18n';
 import {TransactionBuilder} from 'peerplaysjs-lib';
@@ -122,6 +123,28 @@ class AccountServices {
       .catch((error) => {
         log.error('Fail to register for account by other account', error);
       });
+  }
+
+  static async upgradeAccount(account, id, password) {
+    const tr = new TransactionBuilder();
+
+    const keys = KeyGeneratorService.generateKeys(account, password);
+
+    tr.add_type_operation('account_upgrade', {
+      fee: {
+        amount: 0,
+        asset_id: 0
+      },
+      account_to_upgrade: id, 
+      upgrade_to_lifetime_member: true
+    });
+
+    try {
+      let response = await WalletService.processTransaction(keys, tr);
+      return response;
+    } catch (error) {
+      return false;
+    }
   }
 
   /**

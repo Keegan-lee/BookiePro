@@ -1,4 +1,5 @@
 import ActionTypes from '../constants/ActionTypes';
+import {Config} from '../constants';
 
 /**
  * Private actions
@@ -65,6 +66,12 @@ class SettingActions {
       if (accountId) {
         const settingByAccountId = getState().getIn(['setting', 'settingByAccountId']);
         const hasNeverSetInitialSetting = !settingByAccountId.has(accountId);
+
+        if (settingByAccountId.get('currency') !== Config.features.currency) {
+          dispatch(
+            SettingPrivateActions.updateCurrencyFormatAction(Config.features.currency, accountId)
+          );
+        }
 
         if (hasNeverSetInitialSetting) {
           dispatch(SettingPrivateActions.setInitialSettingAction(accountId));

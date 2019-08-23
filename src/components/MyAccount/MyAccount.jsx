@@ -34,7 +34,7 @@
 import React, {PureComponent} from 'react';
 import {I18n} from 'react-redux-i18n';
 import TransactionHistory from './TransactionHistory';
-import {Row, Col, Card, Switch, Select, Breadcrumb} from 'antd';
+import {Row, Col, Card, Switch, Select, Breadcrumb, Button} from 'antd';
 import {connect} from 'react-redux';
 import {bindActionCreators} from 'redux';
 import './MyAccount.less';
@@ -50,6 +50,7 @@ import {
 import {MyAccountPageSelector} from '../../selectors';
 import PeerPlaysLogo from '../PeerPlaysLogo';
 import {Config} from '../../constants';
+import {AccountService} from '../../services';
 
 const Option = Select.Option;
 
@@ -58,7 +59,8 @@ class MyAccount extends PureComponent {
     super(props);
 
     this.state = {
-      withdrawAmount: ''
+      withdrawAmount: '',
+      referralError: false
     };
 
     this.handleCurrFormatChange = this.handleCurrFormatChange.bind(this);
@@ -71,9 +73,11 @@ class MyAccount extends PureComponent {
     this.handleResetExport = this.handleResetExport.bind(this);
 
     this.renderSettingCard = this.renderSettingCard.bind(this);
+    this.renderLifetimeMembersCard = this.renderLifetimeMembersCard.bind(this);
     this.handleDownloadPasswordFile = this.handleDownloadPasswordFile.bind(this);
     this.handleNavigateToHome = this.handleNavigateToHome.bind(this);
     this.handleRedirectToChangePwd = this.handleRedirectToChangePwd.bind(this);
+    this.upgrade = this.upgrade.bind(this);
   }
 
   /**
@@ -219,6 +223,54 @@ class MyAccount extends PureComponent {
     this.props.navigateTo('/exchange');
   }
 
+  async upgrade() {
+    let response = await AccountService.upgradeAccount(
+      this.props.accountName, this.props.accountId, this.props.password
+    );
+
+    if (!response) {
+      this.setState({
+        referralError: true
+      });
+    }
+  } 
+
+  renderLifetimeMembersCard() {
+    let referrer = this.props.account.get('referrer');
+    let isLifetimeMember = referrer === this.props.accountId;
+
+    return (
+      <Card
+        className='bookie-card referralUpgrade'
+        title={ I18n.t('myAccount.upgrade') }
+        bordered={ false }
+        style={ {width: '100%'} }
+      >
+        <Row>
+          { 
+            !isLifetimeMember &&
+            <Button
+              className='btn btn-primary upgradeButton'
+              onClick={ this.upgrade }
+            >
+            Upgrade Account
+            </Button>
+          }
+
+          {
+            isLifetimeMember &&
+            <p className='success'>{ I18n.t('myAccount.lifetime_member') }</p>
+          }
+
+          { this.state.referralError && 
+            <p className='insufficientFunds'>{ I18n.t('myAccount.insufficient_funds') }</p>
+          }
+        </Row>
+
+      </Card>
+    );
+  }
+
   /**
    * This method generates 'antd' card to create the markup for 'Settings' section
    * on the My Account screen
@@ -351,6 +403,10 @@ class MyAccount extends PureComponent {
             </Col>
           ) : null}
           <Col span={ 10 }>{this.renderSettingCard()}</Col>
+          { 
+            this.props.referralUpgradeEnabled && 
+            <Col span={ 10 }>{this.renderLifetimeMembersCard()}</Col>
+          }
         </Row>
         <Row>
           <TransactionHistory
@@ -377,7 +433,8 @@ MyAccount.defaultProps = {
   depositsEnabled: Config.features.deposits,
   withdrawalsEnabled: Config.features.withdrawels,
   currencySymbol: Config.features.currency,
-  americanOddsEnabled: Config.features.americanOdds
+  americanOddsEnabled: Config.features.americanOdds,
+  referralUpgradeEnabled: Config.features.referralUpgrade
 };
 
 const mapStateToProps = (state) => ({
@@ -400,7 +457,10 @@ const mapStateToProps = (state) => ({
   availableBalance: MyAccountPageSelector.availableBalanceSelector(state),
   withdrawLoadingStatus: MyAccountPageSelector.withdrawLoadingStatusSelector(state),
   convertedAvailableBalance: MyAccountPageSelector.formattedAvailableBalanceSelector(state),
-  accountName: MyAccountPageSelector.accountNameSelector(state)
+  accountName: MyAccountPageSelector.accountNameSelector(state),
+  account: state.getIn(['account', 'account']),
+  accountId: state.getIn(['account', 'account', 'id']),
+  password: state.getIn(['account', 'password'])
 });
 
 function mapDispatchToProps(dispatch) {

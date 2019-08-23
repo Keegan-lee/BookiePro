@@ -81,7 +81,8 @@ const Config = {
     withdrawels: false,
     deposits: false,
     currency: 'TEST',
-    americanOdds: false
+    americanOdds: false,
+    referralUpgrade: true
   },
   pingInterval: 9000 // Interval in seconds to ping the BlockChain.
 };
