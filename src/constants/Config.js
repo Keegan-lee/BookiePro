@@ -80,7 +80,7 @@ const Config = {
   features: {
     withdrawels: false,
     deposits: false,
-    currency: 'TEST',
+    currency: 'PPY',
     americanOdds: false,
     referralUpgrade: true
   },

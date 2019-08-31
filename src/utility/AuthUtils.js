@@ -1,4 +1,4 @@
-import {Apis} from 'peerplaysjs-ws';
+import {Apis} from 'peerplaysjs-lib';
 
 const AuthUtils = {
   normalizeAccountName: function(value, previousValue) {
