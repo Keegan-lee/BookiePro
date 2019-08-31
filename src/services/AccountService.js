@@ -5,17 +5,18 @@ import KeyGeneratorService from './KeyGeneratorService';
 import WalletService from './WalletService';
 import {I18n} from 'react-redux-i18n';
 import {TransactionBuilder} from 'peerplaysjs-lib';
+import {AuthUtils} from '../utility';
 
 class AccountServices {
   /**
    * Ask the faucet to create account for us
    */
-  static registerThroughFaucet(attempt, accountName, keys) {
+  static registerThroughFaucet(attempt, accountName, referrerName, keys) {
     const ownerPublicKey = keys.owner.toPublicKey().toPublicKeyString();
     const activePublicKey = keys.active.toPublicKey().toPublicKeyString();
     const memoPublicKey = keys.memo.toPublicKey().toPublicKeyString();
 
-    return new Promise((resolve, reject) => {
+    return new Promise(async (resolve, reject) => {
       // Use random faucet
       const faucets = Config.faucetUrls;
       let index = Math.floor(Math.random() * Object.keys(faucets).length);
@@ -26,6 +27,30 @@ class AccountServices {
 
       if (process.env.name === 'beatrice') {
         apiEP = '/faucet';
+      }
+
+      let referrer = '';
+
+      /** Assign value to referrer based on input field or local storage,
+       *  priority given to Input field
+       *  Empty string if neither exist
+       */
+      if (referrerName) {
+        referrer = referrerName;
+      } else if (localStorage.getItem('referrer')) {
+        referrer = atob(localStorage.getItem('referrer'));
+      }
+
+      let result = await AuthUtils.lookupAccount(referrer, 100);
+
+      if (!result) {
+        referrer = '';
+      } else {
+        let {id, lifetime_referrer} = result;
+
+        if (id !== lifetime_referrer) {
+          referrer = '';
+        }
       }
 
       // Call faucet api to register for account
@@ -43,7 +68,7 @@ class AccountServices {
             active_key: activePublicKey,
             memo_key: memoPublicKey,
             refcode: '',
-            referrer: ''
+            referrer: referrer
           }
         })
       })

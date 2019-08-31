@@ -52,7 +52,37 @@ let electron;
 const isRunningInsideElectron = AppUtils.isRunningInsideElectron();
 
 if (isRunningInsideElectron) {
+  const isWindowsPlatform = AppUtils.isWindowsPlatform();
   electron = window.require('electron');
+  const {ipcRenderer} = electron;
+
+  let referrer;
+
+  electron.ipcRenderer.send('pathRequest', [
+    'name',
+    'appPath'
+  ]);
+
+  if (isWindowsPlatform) {
+    ipcRenderer.send('windowsPathRequest', ['paths']);
+  } else {
+    ipcRenderer.send('macPathRequest', ['paths']);
+  }
+
+  ipcRenderer.on('windowsPathReply', function(event, args) {
+    referrer = args[0].split('BookiePro')[1].split('.exe')[0].split('-')[1];
+    setReferrer(referrer);
+  });
+
+  ipcRenderer.on('macPathReply', function(event, args) {
+    referrer = args[0].split('BookiePro')[1].split('.dmg')[0].split('-')[1];
+    setReferrer(referrer);
+  });
+
+  function setReferrer(referrer) {
+    localStorage.setItem('referrer', referrer);
+  }
+
   // add a listener to handle all clicks
   document.addEventListener('click', (event) => {
     // act on any clicks that are hyperlinks preceeded by http

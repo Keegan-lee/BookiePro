@@ -13,7 +13,6 @@ import {FileSaverUtils} from '../../utility';
 import {LoadingStatus} from '../../constants';
 import {I18n, Translate} from 'react-redux-i18n';
 import {AuthUtils} from '../../utility';
-
 const {saveAs} = FileSaverUtils;
 
 /**
@@ -56,6 +55,29 @@ const renderField = ({tabIndex, errors, placeholder, input, type, meta: {touched
         </span>
       ))
       : null}
+  </div>
+);
+
+/**
+ *  This function renders the input field for Referrer Name as well as
+ *  a relevant error or success message.
+ */
+const renderReferrer = ({tabIndex, input, type, placeholder,
+  meta: {touched, error, active, asyncValidating}}) => (
+  <div>
+    <input
+      autoComplete='off'
+      type={ type }
+      placeholder={ placeholder }
+      { ...input }
+      tabIndex={ tabIndex }
+    />
+    {input.value !== '' && touched && error && <span className='errorText'>{error}</span>}
+    {
+      !asyncValidating && input.value !== '' &&
+      touched && !error && !active &&
+      <span className='validReferrerAccount'>Valid Referrer</span>
+    }
   </div>
 );
 
@@ -282,6 +304,17 @@ class SignupForm extends PureComponent {
             onChange={ this.onChangeAccountName.bind(this) }
           />
         </div>
+        <div className='form-fields-referrer'>
+          <Field
+            name='referrerName'
+            id='referrerName'
+            errors={ errors }
+            component={ renderReferrer }
+            placeholder={ I18n.t('signup.referrer_name') }
+            type='text'
+            tabIndex='2'
+          />
+        </div>
         <div className='form-fields pos-rel'>
           <Field
             name='password'
@@ -289,7 +322,7 @@ class SignupForm extends PureComponent {
             component={ renderPasswordField }
             type='text'
             onClickCopy={ this.onClickCopy.bind(this) }
-            tabIndex='2'
+            tabIndex='3'
           />
         </div>
         <div className='form-fields'>
@@ -298,7 +331,7 @@ class SignupForm extends PureComponent {
             errors={ errors }
             component={ renderRetypePasswordField }
             type='text'
-            tabIndex='3'
+            tabIndex='4'
           />
         </div>
         <div className='form-fields savePasswordBox'>
@@ -324,7 +357,7 @@ class SignupForm extends PureComponent {
             component={ renderCheckboxField }
             type='checkbox'
             pseudoText={ <Translate value='registration.eulaAgree' dangerousHTML /> }
-            tabIndex='4'
+            tabIndex='5'
           />
           <Field
             name='secure'
@@ -332,7 +365,7 @@ class SignupForm extends PureComponent {
             component={ renderCheckboxField }
             type='checkbox'
             pseudoText={ I18n.t('signup.securely_saved_password_warning') }
-            tabIndex='5'
+            tabIndex='6'
           />
         </div>
         <div className='form-fields margin-btm-20 '>
@@ -369,7 +402,7 @@ class SignupForm extends PureComponent {
 
 export default reduxForm({
   form: 'registerAccountForm', // a unique identifier for this form
-  fields: ['accountName', 'password', 'password_retype', 'secure', 'understand'],
+  fields: ['accountName', 'referrerName', 'password', 'password_retype', 'secure', 'understand'],
   //Form field validations
   validate: function submit(values) {
     let errors = {};
@@ -383,7 +416,7 @@ export default reduxForm({
         errors.accountName = I18n.t('signup.premium_acc_text');
       }
     }
-
+  
     //Password-Re-type password fields validation
     if (values.get('password') && values.get('password') !== values.get('password_retype')) {
       errors.password_retype = I18n.t('signup.password_no_match');
@@ -399,5 +432,24 @@ export default reduxForm({
     }
 
     return errors;
+  },
+  asyncValidate: function referrerName(values) {
+
+    if (!values.get('referrerName')) {
+      return Promise.resolve();
+    }
+
+    return AuthUtils.lookupAccount(values.get('referrerName'), 100)
+      .then((result) => {
+        if(!result) {
+          throw {referrerName: 'Account does not exist'};
+        }
+
+        let {id, lifetime_referrer} = result;
+
+        if (id !== lifetime_referrer) {
+          throw {referrerName: 'Referrer must be lifetime member'};
+        }
+      });
   }
 })(SignupForm);
