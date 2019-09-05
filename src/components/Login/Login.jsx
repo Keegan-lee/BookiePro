@@ -7,7 +7,7 @@
  * 'account.account'.
  */
 import React, {PureComponent} from 'react';
-import logo from '../../assets/images/bookie_logo_login.png';
+import logo from '../../assets/images/BookiePro-Horiz.svg';
 import {Form} from 'antd';
 import LoginForm from './LoginForm.jsx';
 import {NavigateActions, AuthActions, AppActions} from '../../actions';
