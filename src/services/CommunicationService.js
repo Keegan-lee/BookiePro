@@ -315,8 +315,11 @@ class CommunicationService {
           const localizedUpdatedObject = ObjectUtils.localizeArrayOfObjects(updatedObjects, [
             'description'
           ]);
+
+          const polishedMarketGroups = ObjectUtils.stripAssetNameFromBMGs(localizedUpdatedObject);
+
           this.dispatch(
-            BettingMarketGroupActions.addOrUpdateBettingMarketGroupsAction(localizedUpdatedObject)
+            BettingMarketGroupActions.addOrUpdateBettingMarketGroupsAction(polishedMarketGroups)
           );
           break;
         }
