@@ -51,6 +51,8 @@ import {MyAccountPageSelector} from '../../selectors';
 import PeerPlaysLogo from '../PeerPlaysLogo';
 import {Config} from '../../constants';
 import {AccountService} from '../../services';
+import {AppUtils} from '../../utility';
+
 
 const Option = Select.Option;
 
@@ -220,7 +222,7 @@ class MyAccount extends PureComponent {
    * link on the Breadcrumb - {@link Exchange}
    */
   handleNavigateToHome() {
-    this.props.navigateTo('/exchange');
+    this.props.navigateTo(AppUtils.getHomePath(this.props.bookMode));
   }
 
   async upgrade() {
@@ -460,7 +462,8 @@ const mapStateToProps = (state) => ({
   accountName: MyAccountPageSelector.accountNameSelector(state),
   account: state.getIn(['account', 'account']),
   accountId: state.getIn(['account', 'account', 'id']),
-  password: state.getIn(['account', 'password'])
+  password: state.getIn(['account', 'password']),
+  bookMode: state.getIn(['app', 'bookMode'])
 });
 
 function mapDispatchToProps(dispatch) {

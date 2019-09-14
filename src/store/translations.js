@@ -33,7 +33,11 @@ export const translationsObject = {
     },
     titleBar: {
       title: 'BookiePro',
-      clock: 'Local Time'
+      clock: 'Local Time',
+      sportsbookToggle: {
+        exchange: 'Exchange',
+        sportsbook: 'Sportsbook'
+      }
     },
     searchMenu: {
       no_of_result_0: 'No results found',
@@ -432,7 +436,7 @@ export const translationsObject = {
             cancel_button: 'CANCEL',
             confirm_button: 'CONFIRM BET',
             cancel_bet: 'Bet successfully cancelled',
-            cancel_bets: 'All bets have been successfully cancelled',
+            cancel_bets: 'All bets have been successfully cancelled'
           },
           perfect: {
             good_bets_1: 'You are about to update 1 bet for a total liability of ',
