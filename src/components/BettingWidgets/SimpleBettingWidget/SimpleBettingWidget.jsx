@@ -355,20 +355,6 @@ class SimpleBettingWidget extends PureComponent {
           break;
         }
 
-        if (typeOfBet === 'lay') {
-          if (offer) {
-            let odds = offer.get('odds');
-            let price = offer.get('price');
-
-            offer = offer.set('price', CurrencyUtils.formatByCurrencyAndPrecisionWithSymbol(
-              price / (odds - 1),
-              'coin',
-              OFFER_PRECISION,
-              true
-            ));
-          }
-        }
-
         if (parseFloat(offer.get('price')) <= coinDust) {
           goodBetIndex++;
         }
