@@ -34,7 +34,7 @@
 import React, {PureComponent} from 'react';
 import {I18n} from 'react-redux-i18n';
 import TransactionHistory from './TransactionHistory';
-import {Row, Col, Card, Switch, Select, Breadcrumb, Button} from 'antd';
+import {Row, Col, Card, Switch, Select, Breadcrumb, Button, Modal} from 'antd';
 import {connect} from 'react-redux';
 import {bindActionCreators} from 'redux';
 import './MyAccount.less';
@@ -51,6 +51,7 @@ import {MyAccountPageSelector} from '../../selectors';
 import PeerPlaysLogo from '../PeerPlaysLogo';
 import {Config} from '../../constants';
 import {AccountService} from '../../services';
+import Loading from '../Loading';
 
 const Option = Select.Option;
 
@@ -60,7 +61,9 @@ class MyAccount extends PureComponent {
 
     this.state = {
       withdrawAmount: '',
-      referralError: false
+      referralError: false,
+      upgradeModal: false,
+      upgradeLoading: false
     };
 
     this.handleCurrFormatChange = this.handleCurrFormatChange.bind(this);
@@ -77,6 +80,9 @@ class MyAccount extends PureComponent {
     this.handleDownloadPasswordFile = this.handleDownloadPasswordFile.bind(this);
     this.handleNavigateToHome = this.handleNavigateToHome.bind(this);
     this.handleRedirectToChangePwd = this.handleRedirectToChangePwd.bind(this);
+
+    this.cancelUpgrade = this.cancelUpgrade.bind(this);
+    this.showUpgrade = this.showUpgrade.bind(this);
     this.upgrade = this.upgrade.bind(this);
   }
 
@@ -224,16 +230,40 @@ class MyAccount extends PureComponent {
   }
 
   async upgrade() {
+
+    this.setState({
+      upgradeLoading: true
+    });
+
     let response = await AccountService.upgradeAccount(
       this.props.accountName, this.props.accountId, this.props.password
     );
 
     if (!response) {
       this.setState({
-        referralError: true
+        referralError: true,
+        upgradeModal: false,
+        upgradeLoading: false
+      });
+    } else {
+      this.setState({
+        upgradeModal: false,
+        upgradeLoading: false
       });
     }
   } 
+
+  showUpgrade() {
+    this.setState({
+      upgradeModal: true
+    });
+  }
+
+  cancelUpgrade() {
+    this.setState({
+      upgradeModal: false
+    });
+  }
 
   renderLifetimeMembersCard() {
     let referrer = this.props.account.get('referrer');
@@ -251,7 +281,7 @@ class MyAccount extends PureComponent {
             !isLifetimeMember &&
             <Button
               className='btn btn-primary upgradeButton'
-              onClick={ this.upgrade }
+              onClick={ this.showUpgrade }
             >
             Upgrade Account
             </Button>
@@ -424,6 +454,38 @@ class MyAccount extends PureComponent {
         <Row>
           <PeerPlaysLogo />
         </Row>
+        <Modal
+          className='upgradeModal'
+          title={ I18n.t('myAccount.upgrade_modal_title') }
+          visible={ this.state.upgradeModal }
+          footer={ null }
+          onCancel={ this.cancelUpgrade }
+        >
+          {!this.state.upgradeLoading ? <Row>
+            <Col span={ 24 }>
+              <p>{I18n.t('myAccount.upgrade_disclaimer')}</p>
+            </Col>
+            <Col span={ 12 }>
+              <Button
+                className='btn btn-primary modalButton'
+                type='primary'
+                onClick={ this.upgrade }
+              >
+                {I18n.t('myAccount.upgrade_confirm')}
+              </Button>
+            </Col>
+            <Col span={ 12 }>
+              <Button 
+                className='btn modalButton'
+                type='danger'
+                onClick={ this.cancelUpgrade }
+              >
+                {I18n.t('myAccount.upgrade_deny')}
+              </Button>
+            </Col>
+          </Row> : <Loading />
+          }
+        </Modal>
       </div>
     );
   }

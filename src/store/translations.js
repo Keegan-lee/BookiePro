@@ -62,6 +62,10 @@ export const translationsObject = {
       settings: 'settings',
       upgrade: 'Referral Account Upgrade',
       insufficient_funds: 'Insufficient funds to upgrade account',
+      upgrade_modal_title: 'Upgrade your account',
+      upgrade_disclaimer: 'Do you want to upgrade your account to be a lifetime member for 5 PPY? You won\'t be able to earn referral income until you do.',
+      upgrade_confirm: 'Yes',
+      upgrade_deny: 'No',
       lifetime_member: 'You are a referrer',
       notifications: 'Notifications',
       time_zone: 'Choose Time Zone',
@@ -432,7 +436,7 @@ export const translationsObject = {
             cancel_button: 'CANCEL',
             confirm_button: 'CONFIRM BET',
             cancel_bet: 'Bet successfully cancelled',
-            cancel_bets: 'All bets have been successfully cancelled',
+            cancel_bets: 'All bets have been successfully cancelled'
           },
           perfect: {
             good_bets_1: 'You are about to update 1 bet for a total liability of ',
