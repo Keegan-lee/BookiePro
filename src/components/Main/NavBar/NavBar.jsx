@@ -11,7 +11,9 @@ import React, {PureComponent} from 'react';
 import {Layout} from 'antd';
 //import SearchMenu from './SearchMenu';
 import TopMenu from './TopMenu';
+import './PriceTicker';
 import logo from '../../../assets/images/BookiePro-Horiz.svg';
+import PriceTicker from './PriceTicker';
 
 const {Header} = Layout;
 
@@ -54,6 +56,7 @@ class NavBar extends PureComponent {
           ref={ (ref) => this._searchMenu = ref }
           { ...this.props }
          /> */}
+        <PriceTicker />
         <TopMenu />
       </Header>
     );
