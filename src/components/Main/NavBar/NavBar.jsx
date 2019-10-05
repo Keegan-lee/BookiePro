@@ -8,11 +8,17 @@
  *  - Display notifications.
  */
 import React, {PureComponent} from 'react';
+import {bindActionCreators} from 'redux';
+import {connect} from 'react-redux';
 import {Layout} from 'antd';
 //import SearchMenu from './SearchMenu';
 import TopMenu from './TopMenu';
+import './PriceTicker';
 import logo from '../../../assets/images/BookiePro-Horiz.svg';
+import PriceTicker from './PriceTicker';
 
+import {AppUtils} from '../../../utility';
+import {NavigateActions} from '../../../actions';
 const {Header} = Layout;
 
 class NavBar extends PureComponent {
@@ -24,7 +30,7 @@ class NavBar extends PureComponent {
 
   //Redirect to 'Home' screen when clicked on 'Home' link on the Breadcrumb
   handleNavigateToHome() {
-    this.props.navigateTo('/exchange');
+    this.props.navigateTo(AppUtils.getHomePath(this.props.bookMode));
   }
 
   //Called by parent component Main
@@ -34,7 +40,8 @@ class NavBar extends PureComponent {
 
   renderLogo() {
     //Hide cursor and deactivate click event of logo when on home page
-    const isHomeScreen = window.location.hash.endsWith('/exchange');
+    const isHomeScreen = window.location.hash.endsWith('/exchange') ||
+     window.location.hash.endsWith('/sportsbook');
     return (
       <div
         className={ 'logo' + (!isHomeScreen ? ' link' : '') }
@@ -54,10 +61,27 @@ class NavBar extends PureComponent {
           ref={ (ref) => this._searchMenu = ref }
           { ...this.props }
          /> */}
+        <PriceTicker />
         <TopMenu />
       </Header>
     );
   }
 }
 
-export default NavBar;
+const mapStateToProps = (state) => ({
+  bookMode: state.getIn(['app', 'bookMode'])
+});
+
+
+const mapDispatchToProps = (dispatch) => bindActionCreators(
+  {
+    navigateTo: NavigateActions.navigateTo
+  },
+  dispatch
+);
+
+export default connect(
+  mapStateToProps,
+  mapDispatchToProps
+)(NavBar);
+
