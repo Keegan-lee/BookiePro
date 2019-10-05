@@ -16,15 +16,18 @@ const {
 } = CommonSelector;
 
 const filters = Config.filters;
-//@TODO - Only select bmgs from the coreAsset
-// let coreAsset = Config.coreAsset;
+const coreAsset = Config.coreAsset;
+
+const filterBMGSByCoreAsset = (bmgs) => {
+  return bmgs.filter((bmg) => bmg.get('asset_id') === coreAsset);
+};
 
 const getEvent = (state, id) => state.getIn(['event', 'eventsById', id]);
 
 const getEventIdByFromBMGId = (state, id) => {
   const bmgs = state.getIn(['bettingMarketGroup', 'bettingMarketGroupsById']);
   let foundEventID = -1;
-  
+
   if (bmgs) {
     bmgs.valueSeq().forEach((bettingMarket) => {
       if (bettingMarket.get('id') === id) {
@@ -37,10 +40,13 @@ const getEventIdByFromBMGId = (state, id) => {
 };
 
 const getBettingMarketGroupsByEventId = (state, ownProps) => {
-  const bmgs = state.getIn(['bettingMarketGroup', 'bettingMarketGroupsById']);
+  let bmgs = state.getIn(['bettingMarketGroup', 'bettingMarketGroupsById']);
   const eventId = ownProps.eventId;
 
   let bettingMarketGroups = Immutable.List();
+
+  bmgs = filterBMGSByCoreAsset(bmgs);
+
   bmgs.valueSeq().forEach((bettingMarketGroup) => {
     if (bettingMarketGroup.get('event_id') === eventId) {
       bettingMarketGroups = bettingMarketGroups.push(bettingMarketGroup);
@@ -50,8 +56,11 @@ const getBettingMarketGroupsByEventId = (state, ownProps) => {
 };
 
 const getAllBettingMarketGroupsByEventId = (state) => {
-  const bmgs = state.getIn(['bettingMarketGroup', 'bettingMarketGroupsById']);
+  let bmgs = state.getIn(['bettingMarketGroup', 'bettingMarketGroupsById']);
   let events = [];
+
+  bmgs = filterBMGSByCoreAsset(bmgs);
+
   bmgs.valueSeq().forEach((bmg) => {
     let eventID = bmg.get('event_id');
 
